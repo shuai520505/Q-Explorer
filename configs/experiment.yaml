@@ -1,0 +1,52 @@
+project:
+  name: Q-Explorer
+  version: "0.1"
+  phase: smoke_test
+
+hamiltonians:
+  num_qubits: 4
+  instances:
+    - topology: chain
+      seed: 101
+    - topology: random
+      seed: 202
+  coefficient_low: -1.0
+  coefficient_high: 1.0
+  random_edge_probability: 0.5
+
+ansatz:
+  rotation: ry
+  depths: [1, 2]
+  entanglements: [linear, ring]
+
+vqe:
+  backend: qiskit_aer_statevector
+  noiseless: true
+  optimizer: COBYLA
+  max_iterations: 40
+  optimizer_tolerance: 1.0e-6
+  convergence_energy_error: 1.0e-2
+  initialization_seeds: [11, 29]
+
+evidence_judge:
+  minimum_seeds: 2
+  support_relative_improvement: 0.10
+  counterexample_relative_worsening: 0.10
+  variance_ratio_limit: 2.0
+  failure_rate_difference_limit: 0.25
+  epsilon: 1.0e-12
+
+hypothesis:
+  hypothesis_id: H001
+  claim: For a fixed Hamiltonian and depth, ring entanglement produces lower VQE error than linear entanglement.
+  evaluation_hamiltonian_index: 0
+  evaluation_depth: 1
+
+outputs:
+  experiments_trace: traces/experiments.jsonl
+  hypotheses_trace: traces/hypotheses.jsonl
+  evidence_trace: traces/evidence.jsonl
+  hamiltonians_data: data/hamiltonians.json
+  results_csv: results/smoke_test_results.csv
+  summary_json: results/smoke_test_summary.json
+

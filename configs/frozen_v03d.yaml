@@ -1,0 +1,96 @@
+version: "0.3-D"
+frozen: true
+mode: READ_ONLY_POSTHOC_AUDIT
+base_commit: 9dbf5fc
+protocol_principles:
+  new_live_llm_calls: 0
+  new_aer_vqe_runs: 0
+  new_research_runs: 0
+  mutate_historical_records: false
+historical_sources:
+  v03:
+    commit: e9564a8
+    paths:
+      - configs/frozen_v03.yaml
+      - configs/frozen_v03_tasks.yaml
+      - configs/frozen_v03_live.yaml
+      - prompts/research_agent_v03_deepseek_v01.txt
+      - docs/V03_REPORT.md
+      - results/v03
+      - traces/v03
+  v03c:
+    protocol_commit: 3cbbdf8
+    final_commit: 9dbf5fc
+    paths:
+      - configs/frozen_v03c.yaml
+      - docs/V03C_REPORT.md
+      - results/v03c
+      - traces/v03c
+formal_runs:
+  live_llm:
+    v03_task_seeds: [301, 302, 303]
+    v03_git_commit: eff123b
+    v03c_task_seeds: [304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315]
+    v03c_protocol_hash: e2e1337cfe6e544d339a0a37c972e96a06c65bfc474f8ad7f6b14054209bab57
+  rule_based:
+    strategy: rule_based
+    policy_seed: null
+    executable_commit: 2695636
+target_tasks:
+  scope_revision: TASK_G01
+  competing_explanations: TASK_D01
+  boundary_integrity: TASK_F01
+scope_attribution:
+  # A revision proposal is chosen before the experiment/evidence from its own round.
+  # Therefore only strictly earlier rounds were visible to the scientific decision.
+  causal_visibility_rule: evidence_round_strictly_less_than_revision_round
+  qualifying_decisions: [COUNTEREXAMPLE, WEAKEN]
+  deterministic_reconstruction_rules:
+    - same_run
+    - same_task
+    - same_parent_hypothesis
+    - evidence_round_strictly_before_revision_round
+    - evidence_after_previous_revision_round
+    - complete_source_experiment_links
+    - exactly_one_eligible_candidate
+    - action_and_reason_metadata_do_not_contradict_candidate
+    - scope_change_is_evidence_consistent_narrowing
+  ambiguous_candidate_policy: reject
+  statuses: [STRICTLY_SUPPORTED, DETERMINISTICALLY_RECONSTRUCTABLE, INDIRECTLY_SUPPORTED, UNSUPPORTED_ATTRIBUTION]
+  evidence_attribution_scores:
+    UNSUPPORTED_ATTRIBUTION: 0
+    INDIRECTLY_SUPPORTED: 1
+    DETERMINISTICALLY_RECONSTRUCTABLE: 2
+    STRICTLY_SUPPORTED: 3
+  capability_status_rule:
+    SUPPORTED: attributed_validated_rate_at_least_0.50
+    PARTIAL: attributed_validated_runs_at_least_2_and_at_least_half_of_originally_validated_runs
+    INCONCLUSIVE: otherwise
+competing_design_validity:
+  strategy_agnostic: true
+  critical_explanatory_variables: [hamiltonian_topology, depth]
+  required_control_variable: depth
+  valid_control_pair_rules:
+    - current_action_type_is_CONTROL_DEPTH
+    - same_hamiltonian_instance
+    - same_num_qubits
+    - same_entanglement
+    - depth_is_the_only_changed_condition_variable
+    - both_conditions_have_successful_experiments
+    - current_evidence_is_decisive
+    - evidence_has_control_support_reason_code
+  scientific_design_criteria:
+    - competing_hypotheses_explicitly_identified
+    - at_least_one_valid_discriminative_control
+    - confound_control_valid
+    - control_evidence_supports_or_weakens_an_explanation
+    - final_judgment_consistent_with_control_evidence
+  scientific_control_scores:
+    no_discriminative_control: 0
+    attempted_but_confounded: 1
+    valid_control_executed: 2
+    valid_control_and_judgment_consistent: 3
+history_snapshot:
+  algorithm: SHA256_BYTES_PER_FILE_THEN_SHA256_SORTED_RELATIVE_PATH_AND_DIGEST
+  before_path: results/v03d/history_hash_snapshot_before.json
+  after_path: results/v03d/history_hash_snapshot_after.json

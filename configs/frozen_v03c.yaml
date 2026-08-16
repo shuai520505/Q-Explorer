@@ -1,0 +1,31 @@
+# Frozen before V0.3-C replication results. Contains no credential.
+version: "0.3-C"
+frozen: true
+base_final_commit: e9564a8
+scientific_config_path: configs/frozen_v03.yaml
+scientific_config_hash: c47285bde61b6920908461d76f820f3f1e2fdf06b2b5b655b030766e8c7d8b9d
+task_suite_path: configs/frozen_v03_tasks.yaml
+task_suite_hash: 50c73a2e94a9be6b36ce093251257859d4c9fc37f45858745da4fb805d618713
+live_config_path: configs/frozen_v03_live.yaml
+live_config_hash: 75f807134a729a5d34b69164d37bad015744ef1144a928d84fae7d5cd3f42783
+prompt_path: prompts/research_agent_v03_deepseek_v01.txt
+prompt_hash: 530641052769c78fd36905fe2ecdffe6b44280657964b0493fbbcf6c1e0ac4af
+model: deepseek-v4-flash
+provider: openai_compatible
+base_url: https://api.deepseek.com
+thinking_mode: false
+temperature: 0.1
+max_tokens: 4096
+retry: 1
+timeout_seconds: 120
+target_task_ids: [TASK_F01, TASK_G01, TASK_D01]
+target_task_types: [BOUNDARY_TRANSITION, SCOPE_REVISION, COMPETING_EXPLANATIONS]
+existing_run_seeds: [301, 302, 303]
+additional_run_seeds: [304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315]
+target_total_runs_per_task: 15
+budget_by_task: {TASK_F01: 16, TASK_G01: 16, TASK_D01: 16}
+judge_config_hash: 55b89131cea4d7f6e1d63f87188379c003456e9fd83056cdd7f79b1e41123746
+vqe_config_hash: 1ad5ac0cb68c0011dea00c6a4023180a8f0738e689a4879781c71c7a0f186d58
+confidence_interval: {method: wilson, confidence_level: 0.95}
+results_root: results/v03c
+traces_root: traces/v03c

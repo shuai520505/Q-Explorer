@@ -1,0 +1,43 @@
+version: "0.5-gate0"
+mode: AUDIT
+formal_hardware_research_jobs: 0
+formal_hardware_vqe_runs: 0
+base_v04_final_commit: 0e86e4a
+candidate_source: results/v04/hardware_validation_candidates.json
+candidate_count: 2
+platform:
+  name: China Mobile Cloud WuYue Quantum Computing Cloud Platform
+  access_method_selected: WuYueSDK / QCOS API capability audit
+  account_endpoint: UNKNOWN
+  credential_environment_variables:
+    - MOBILE_QUANTUM_ACCESS_KEY
+    - MOBILE_QUANTUM_SECRET_KEY
+    - MOBILE_QUANTUM_ENDPOINT
+official_sources:
+  product_page: https://qiye.cmcloud.com/taizhou2/zy-WYQCLOUD.html
+  open_source_organization: https://gitee.com/WUYUEQbit
+  wuyue_sdk_repository: https://gitee.com/WUYUEQbit/WuYueSDK
+  wuyue_sdk_commit_audited: 5fb5cd960cd4e070eaa5f9d8504e9c2ff2064f6d
+  wuyue_sdk_version_audited: 1.1.0
+  qcos_repository: https://gitee.com/WUYUEQbit/QCOS
+  qcos_commit_audited: 4d0706c36b3126e164f4b50496b53e8547cb6b90
+  qcos_version_audited: 1.5.0
+local_transpilation_reference:
+  qiskit_version: 2.5.1
+  seed_transpiler: 73
+  basis_gates: [rz, sx, x, cx, swap]
+  reference_connectivity: [fully_connected_4q, linear_4q]
+  actual_account_hardware: false
+hardware_a_draft:
+  shots_considered: [512, 1024, 2048, 4096]
+  recommended_shots: 2048
+  repeats_within_calibration_window: 3
+  calibration_windows: 3
+  error_mitigation_gate0: false
+hardware_b_cost_assumptions:
+  optimizer: COBYLA
+  max_iterations: 40
+  observable_groups: 1
+  shots: 2048
+  repeats: 3
+submission_guard: REAL_HARDWARE_EXECUTION_BLOCKED_BY_GATE0

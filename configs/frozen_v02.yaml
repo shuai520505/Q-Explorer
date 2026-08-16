@@ -1,0 +1,80 @@
+# Frozen before V0.2 strategy runs. Runtime verifies this file's SHA-256.
+project:
+  name: Q-Explorer
+  version: "0.2"
+  phase: mini_active_exploration
+
+seed_state:
+  v01_summary: results/smoke_test_summary.json
+  v01_experiments: traces/experiments.jsonl
+  v01_hypotheses: traces/hypotheses.jsonl
+  v01_evidence: traces/evidence.jsonl
+
+experiment_space:
+  hamiltonians:
+    - {set: exploration, num_qubits: 4, topology: chain, seed: 101}
+    - {set: exploration, num_qubits: 4, topology: random, seed: 202}
+    - {set: exploration, num_qubits: 4, topology: ring, seed: 303}
+    - {set: exploration, num_qubits: 6, topology: chain, seed: 401}
+    - {set: exploration, num_qubits: 6, topology: random, seed: 402}
+    - {set: held_out, num_qubits: 4, topology: ring, seed: 901}
+    - {set: held_out, num_qubits: 6, topology: ring, seed: 902}
+  coefficient_low: -1.0
+  coefficient_high: 1.0
+  random_edge_probability: 0.5
+  depths: [1, 2, 3]
+  entanglements: [linear, ring]
+
+vqe:
+  backend: qiskit_aer_statevector
+  noiseless: true
+  optimizer: COBYLA
+  max_iterations: 40
+  optimizer_tolerance: 1.0e-6
+  convergence_energy_error: 1.0e-2
+  seed_groups:
+    - [1011, 1029]
+    - [1031, 1049]
+    - [1051, 1069]
+    - [1071, 1089]
+    - [1091, 1109]
+    - [1111, 1129]
+    - [1131, 1149]
+    - [1151, 1169]
+    - [1171, 1189]
+    - [1191, 1209]
+
+budget:
+  unit: vqe_run
+  runs_per_strategy: 20
+  minimum_decision_rounds: 3
+
+evidence_judge:
+  minimum_seeds: 2
+  support_relative_improvement: 0.10
+  counterexample_relative_worsening: 0.10
+  variance_ratio_limit: 2.0
+  failure_rate_difference_limit: 0.25
+  epsilon: 1.0e-12
+  supported_minimum_instances: 2
+  supported_requires_held_out: true
+
+held_out:
+  access_action: VALIDATE_HYPOTHESIS
+  results_hidden_until_execution: true
+
+strategies:
+  active_agent: {policy: rule_based_v01}
+  random: {baseline_seeds: [17, 41]}
+  no_intervention: {order: balanced_round_robin}
+  fixed: {depth: 2, entanglement: linear}
+
+agent:
+  prompt_version: research_agent_v01
+  temperature: 0.1
+  max_repair_attempts: 1
+
+metrics:
+  stable_statuses: [SUPPORTED, NARROWED, REJECTED, PROBLEM_REVISED]
+  adequate_replication: 4
+

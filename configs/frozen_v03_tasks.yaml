@@ -1,0 +1,187 @@
+version: "0.3"
+frozen: true
+tasks:
+  - task_id: TASK_A01
+    task_type: SIMPLE_FALSIFICATION
+    scientific_question: At fixed depth on one Ising instance, does ring entanglement reduce VQE error relative to linear entanglement?
+    initial_observation: []
+    initial_hypothesis: {hypothesis_id: HA01, claim: Ring entanglement has lower error at the fixed condition, status: PENDING}
+    allowed_variables: [entanglement, hamiltonian_instance]
+    controlled_variables: [depth, optimizer, seed_policy]
+    experiment_pool:
+      - {condition_id: A_E_L, set: exploration, num_qubits: 4, topology: chain, ham_seed: 501, depth: 1, entanglement: linear}
+      - {condition_id: A_E_R, set: exploration, num_qubits: 4, topology: chain, ham_seed: 501, depth: 1, entanglement: ring}
+      - {condition_id: A_H_L, set: held_out, num_qubits: 4, topology: chain, ham_seed: 951, depth: 1, entanglement: linear}
+      - {condition_id: A_H_R, set: held_out, num_qubits: 4, topology: chain, ham_seed: 951, depth: 1, entanglement: ring}
+    exploration_set: [A_E_L, A_E_R]
+    held_out_set: [A_H_L, A_H_R]
+    budget: 12
+    success_criteria: {minimum_independent_instances: 2, minimum_seeds_per_condition: 2, control_required: false, held_out_required: true}
+    falsification_conditions: [Ring error is not lower under the paired comparison.]
+    ground_truth_access_policy: EVALUATION_ONLY_AFTER_VALIDATION
+    difficulty_metadata: {difficulty: low, minimum_possible_resolution_runs: 8, requires_replication: false, requires_control: false, contains_counterexample: false, contains_competing_explanations: false, contains_boundary: false}
+    evaluation_metadata: {design_intent: simple paired falsification}
+
+  - task_id: TASK_B01
+    task_type: REPLICATION_NEEDED
+    scientific_question: Is an apparent entanglement difference stable across initialization seeds?
+    initial_observation: [{summary: A single initialization produced a directionally different error, evidence_status: INSUFFICIENT_REPLICATION}]
+    initial_hypothesis: {hypothesis_id: HB01, claim: The apparent topology difference replicates across seeds, status: PENDING}
+    allowed_variables: [initialization_seed, entanglement]
+    controlled_variables: [hamiltonian, depth, optimizer]
+    experiment_pool:
+      - {condition_id: B_E_L, set: exploration, num_qubits: 4, topology: random, ham_seed: 502, depth: 2, entanglement: linear}
+      - {condition_id: B_E_R, set: exploration, num_qubits: 4, topology: random, ham_seed: 502, depth: 2, entanglement: ring}
+      - {condition_id: B_H_L, set: held_out, num_qubits: 4, topology: random, ham_seed: 952, depth: 2, entanglement: linear}
+      - {condition_id: B_H_R, set: held_out, num_qubits: 4, topology: random, ham_seed: 952, depth: 2, entanglement: ring}
+    exploration_set: [B_E_L, B_E_R]
+    held_out_set: [B_H_L, B_H_R]
+    budget: 16
+    success_criteria: {minimum_independent_instances: 2, minimum_seeds_per_condition: 4, control_required: false, held_out_required: true}
+    falsification_conditions: [The direction changes across seed groups or remains within variance.]
+    ground_truth_access_policy: EVALUATION_ONLY_AFTER_VALIDATION
+    difficulty_metadata: {difficulty: medium, minimum_possible_resolution_runs: 12, requires_replication: true, requires_control: false, contains_counterexample: false, contains_competing_explanations: false, contains_boundary: false}
+    evaluation_metadata: {design_intent: replication before conclusion}
+
+  - task_id: TASK_C01
+    task_type: LOCAL_RULE_COUNTEREXAMPLE
+    scientific_question: Does an initially supported topology relation hold across structurally different Ising instances?
+    initial_observation: [{summary: One exploration instance yielded SUPPORT, evidence_status: SUPPORT}]
+    initial_hypothesis: {hypothesis_id: HC01, claim: The supported topology relation generalizes across instances, status: PRELIMINARY_SUPPORT}
+    allowed_variables: [hamiltonian_instance, entanglement]
+    controlled_variables: [depth, optimizer, seed_policy]
+    experiment_pool:
+      - {condition_id: C1L, set: exploration, num_qubits: 4, topology: chain, ham_seed: 503, depth: 2, entanglement: linear}
+      - {condition_id: C1R, set: exploration, num_qubits: 4, topology: chain, ham_seed: 503, depth: 2, entanglement: ring}
+      - {condition_id: C2L, set: exploration, num_qubits: 4, topology: random, ham_seed: 504, depth: 2, entanglement: linear}
+      - {condition_id: C2R, set: exploration, num_qubits: 4, topology: random, ham_seed: 504, depth: 2, entanglement: ring}
+      - {condition_id: CHL, set: held_out, num_qubits: 4, topology: ring, ham_seed: 953, depth: 2, entanglement: linear}
+      - {condition_id: CHR, set: held_out, num_qubits: 4, topology: ring, ham_seed: 953, depth: 2, entanglement: ring}
+    exploration_set: [C1L, C1R, C2L, C2R]
+    held_out_set: [CHL, CHR]
+    budget: 16
+    success_criteria: {minimum_independent_instances: 3, minimum_seeds_per_condition: 2, control_required: false, held_out_required: true}
+    falsification_conditions: [An independent instance reverses the supported direction.]
+    ground_truth_access_policy: EVALUATION_ONLY_AFTER_VALIDATION
+    difficulty_metadata: {difficulty: medium, minimum_possible_resolution_runs: 12, requires_replication: false, requires_control: false, contains_counterexample: true, contains_competing_explanations: false, contains_boundary: false}
+    evaluation_metadata: {design_intent: local support with possible contradiction}
+
+  - task_id: TASK_D01
+    task_type: COMPETING_EXPLANATIONS
+    scientific_question: Is the observed VQE failure association better explained by Hamiltonian connectivity or by circuit depth?
+    initial_observation: [{summary: Failure co-varies with both connectivity and depth in the initial observations, evidence_status: INCONCLUSIVE}]
+    initial_hypothesis: {hypothesis_id: HD_A, claim: Connectivity explains the failure association, status: PENDING}
+    competing_hypotheses: [{hypothesis_id: HD_B, claim: Circuit depth explains the apparent association, status: PENDING}]
+    allowed_variables: [hamiltonian_topology, depth, entanglement]
+    controlled_variables: [optimizer, seed_policy, num_qubits]
+    experiment_pool:
+      - {condition_id: D_C1, set: exploration, num_qubits: 4, topology: chain, ham_seed: 505, depth: 1, entanglement: ring}
+      - {condition_id: D_C3, set: exploration, num_qubits: 4, topology: chain, ham_seed: 505, depth: 3, entanglement: ring}
+      - {condition_id: D_R1, set: exploration, num_qubits: 4, topology: random, ham_seed: 506, depth: 1, entanglement: ring}
+      - {condition_id: D_R3, set: exploration, num_qubits: 4, topology: random, ham_seed: 506, depth: 3, entanglement: ring}
+      - {condition_id: D_H1, set: held_out, num_qubits: 4, topology: ring, ham_seed: 954, depth: 1, entanglement: ring}
+      - {condition_id: D_H3, set: held_out, num_qubits: 4, topology: ring, ham_seed: 954, depth: 3, entanglement: ring}
+    exploration_set: [D_C1, D_C3, D_R1, D_R3]
+    held_out_set: [D_H1, D_H3]
+    budget: 16
+    success_criteria: {minimum_independent_instances: 3, minimum_seeds_per_condition: 2, control_required: true, held_out_required: true}
+    falsification_conditions: [A single-variable depth control supports the competing explanation.]
+    ground_truth_access_policy: EVALUATION_ONLY_AFTER_VALIDATION
+    difficulty_metadata: {difficulty: high, minimum_possible_resolution_runs: 12, requires_replication: false, requires_control: true, contains_counterexample: false, contains_competing_explanations: true, contains_boundary: false}
+    evaluation_metadata: {design_intent: discriminate connectivity versus depth}
+
+  - task_id: TASK_E01
+    task_type: STABLE_NEGATIVE
+    scientific_question: Is there sufficient evidence for a consistent entanglement effect in the current experiment scope?
+    initial_observation: []
+    initial_hypothesis: {hypothesis_id: HE01, claim: A consistent entanglement effect exists across the scoped instances, status: PENDING}
+    allowed_variables: [hamiltonian_instance, entanglement]
+    controlled_variables: [depth, optimizer, seed_policy]
+    experiment_pool:
+      - {condition_id: E1L, set: exploration, num_qubits: 4, topology: random, ham_seed: 507, depth: 1, entanglement: linear}
+      - {condition_id: E1R, set: exploration, num_qubits: 4, topology: random, ham_seed: 507, depth: 1, entanglement: ring}
+      - {condition_id: E2L, set: exploration, num_qubits: 4, topology: random, ham_seed: 508, depth: 1, entanglement: linear}
+      - {condition_id: E2R, set: exploration, num_qubits: 4, topology: random, ham_seed: 508, depth: 1, entanglement: ring}
+      - {condition_id: EHL, set: held_out, num_qubits: 4, topology: random, ham_seed: 955, depth: 1, entanglement: linear}
+      - {condition_id: EHR, set: held_out, num_qubits: 4, topology: random, ham_seed: 955, depth: 1, entanglement: ring}
+    exploration_set: [E1L, E1R, E2L, E2R]
+    held_out_set: [EHL, EHR]
+    budget: 16
+    success_criteria: {minimum_independent_instances: 3, minimum_seeds_per_condition: 2, control_required: false, held_out_required: true}
+    falsification_conditions: [Effects remain within seed variance or reverse across instances.]
+    ground_truth_access_policy: EVALUATION_ONLY_AFTER_VALIDATION
+    difficulty_metadata: {difficulty: medium, minimum_possible_resolution_runs: 12, requires_replication: true, requires_control: false, contains_counterexample: false, contains_competing_explanations: false, contains_boundary: false}
+    evaluation_metadata: {design_intent: permit a stable negative conclusion}
+
+  - task_id: TASK_F01
+    task_type: BOUNDARY_TRANSITION
+    scientific_question: At what circuit-depth region does the topology-associated VQE error pattern change?
+    initial_observation: [{summary: Depth 1 is inconclusive while one deeper observation is directional, evidence_status: INCONCLUSIVE}]
+    initial_hypothesis: {hypothesis_id: HF01, claim: The topology effect changes over the tested depth range, status: PENDING}
+    allowed_variables: [depth, entanglement]
+    controlled_variables: [hamiltonian, optimizer, seed_policy]
+    experiment_pool:
+      - {condition_id: F1L, set: exploration, num_qubits: 4, topology: ring, ham_seed: 509, depth: 1, entanglement: linear}
+      - {condition_id: F1R, set: exploration, num_qubits: 4, topology: ring, ham_seed: 509, depth: 1, entanglement: ring}
+      - {condition_id: F2L, set: exploration, num_qubits: 4, topology: ring, ham_seed: 509, depth: 2, entanglement: linear}
+      - {condition_id: F2R, set: exploration, num_qubits: 4, topology: ring, ham_seed: 509, depth: 2, entanglement: ring}
+      - {condition_id: F3L, set: exploration, num_qubits: 4, topology: ring, ham_seed: 509, depth: 3, entanglement: linear}
+      - {condition_id: F3R, set: exploration, num_qubits: 4, topology: ring, ham_seed: 509, depth: 3, entanglement: ring}
+      - {condition_id: FHL, set: held_out, num_qubits: 4, topology: ring, ham_seed: 956, depth: 2, entanglement: linear}
+      - {condition_id: FHR, set: held_out, num_qubits: 4, topology: ring, ham_seed: 956, depth: 2, entanglement: ring}
+    exploration_set: [F1L, F1R, F2L, F2R, F3L, F3R]
+    held_out_set: [FHL, FHR]
+    budget: 16
+    success_criteria: {minimum_independent_instances: 2, minimum_seeds_per_condition: 2, control_required: true, held_out_required: true}
+    falsification_conditions: [No adjacent depth pair shows a reproducible direction change.]
+    ground_truth_access_policy: EVALUATION_ONLY_AFTER_VALIDATION
+    difficulty_metadata: {difficulty: high, minimum_possible_resolution_runs: 12, requires_replication: false, requires_control: true, contains_counterexample: false, contains_competing_explanations: false, contains_boundary: true}
+    evaluation_metadata: {design_intent: localize a depth transition}
+
+  - task_id: TASK_G01
+    task_type: SCOPE_REVISION
+    scientific_question: Is a connectivity-associated linear-HEA failure claim valid across the tested depth and qubit scope?
+    initial_observation: [{summary: A 4-qubit observation supports the broad claim, evidence_status: SUPPORT}]
+    initial_hypothesis: {hypothesis_id: HG01, claim: High connectivity causes linear HEA failure throughout the tested scope, status: PRELIMINARY_SUPPORT}
+    allowed_variables: [num_qubits, depth, hamiltonian_topology]
+    controlled_variables: [optimizer, seed_policy, entanglement]
+    experiment_pool:
+      - {condition_id: G4D1, set: exploration, num_qubits: 4, topology: random, ham_seed: 510, depth: 1, entanglement: linear}
+      - {condition_id: G4D3, set: exploration, num_qubits: 4, topology: random, ham_seed: 510, depth: 3, entanglement: linear}
+      - {condition_id: G6D1, set: exploration, num_qubits: 6, topology: random, ham_seed: 511, depth: 1, entanglement: linear}
+      - {condition_id: G6D3, set: exploration, num_qubits: 6, topology: random, ham_seed: 511, depth: 3, entanglement: linear}
+      - {condition_id: GH1, set: held_out, num_qubits: 6, topology: ring, ham_seed: 957, depth: 1, entanglement: linear}
+      - {condition_id: GH3, set: held_out, num_qubits: 6, topology: ring, ham_seed: 957, depth: 3, entanglement: linear}
+    exploration_set: [G4D1, G4D3, G6D1, G6D3]
+    held_out_set: [GH1, GH3]
+    budget: 16
+    success_criteria: {minimum_independent_instances: 3, minimum_seeds_per_condition: 2, control_required: true, held_out_required: true}
+    falsification_conditions: [The claim fails at a tested depth or qubit range.]
+    ground_truth_access_policy: EVALUATION_ONLY_AFTER_VALIDATION
+    difficulty_metadata: {difficulty: high, minimum_possible_resolution_runs: 12, requires_replication: false, requires_control: true, contains_counterexample: true, contains_competing_explanations: false, contains_boundary: true}
+    evaluation_metadata: {design_intent: evidence-bounded scope revision}
+
+  - task_id: TASK_H01
+    task_type: PROBLEM_REVISION
+    scientific_question: Can connectivity alone explain the observed failure pattern, or must the question include a connectivity-by-depth interaction?
+    initial_observation: [{summary: Connectivity-only comparisons disagree at different depths, evidence_status: COUNTEREXAMPLE}]
+    initial_hypothesis: {hypothesis_id: HH01, claim: Connectivity alone explains the failure pattern, status: NARROWED}
+    competing_hypotheses: [{hypothesis_id: HH_B, claim: Connectivity and depth interact within the tested scope, status: PENDING}]
+    allowed_variables: [hamiltonian_topology, depth]
+    controlled_variables: [num_qubits, optimizer, seed_policy, entanglement]
+    experiment_pool:
+      - {condition_id: H_C1, set: exploration, num_qubits: 4, topology: chain, ham_seed: 512, depth: 1, entanglement: linear}
+      - {condition_id: H_C3, set: exploration, num_qubits: 4, topology: chain, ham_seed: 512, depth: 3, entanglement: linear}
+      - {condition_id: H_R1, set: exploration, num_qubits: 4, topology: random, ham_seed: 513, depth: 1, entanglement: linear}
+      - {condition_id: H_R3, set: exploration, num_qubits: 4, topology: random, ham_seed: 513, depth: 3, entanglement: linear}
+      - {condition_id: H_H1, set: held_out, num_qubits: 4, topology: ring, ham_seed: 958, depth: 1, entanglement: linear}
+      - {condition_id: H_H3, set: held_out, num_qubits: 4, topology: ring, ham_seed: 958, depth: 3, entanglement: linear}
+    exploration_set: [H_C1, H_C3, H_R1, H_R3]
+    held_out_set: [H_H1, H_H3]
+    budget: 16
+    success_criteria: {minimum_independent_instances: 3, minimum_seeds_per_condition: 2, control_required: true, held_out_required: true}
+    falsification_conditions: [Connectivity-only predictions reverse across depth.]
+    ground_truth_access_policy: EVALUATION_ONLY_AFTER_VALIDATION
+    difficulty_metadata: {difficulty: high, minimum_possible_resolution_runs: 12, requires_replication: false, requires_control: true, contains_counterexample: true, contains_competing_explanations: true, contains_boundary: true}
+    evaluation_metadata: {design_intent: revise the explanatory variable set}
+

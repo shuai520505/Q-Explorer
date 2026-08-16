@@ -1,0 +1,20 @@
+# Frozen after DeepSeek health check and four-round live smoke. Contains no credential.
+version: "0.3-B"
+frozen: true
+provider: openai_compatible
+base_url: https://api.deepseek.com
+model: deepseek-v4-flash
+thinking_mode: false
+thinking_healthcheck_verified: true
+thinking_compatibility_note: complex structured actions exhausted reasoning tokens without final content
+reasoning_effort: null
+prompt_version: research_agent_v03_deepseek_v01
+prompt_path: prompts/research_agent_v03_deepseek_v01.txt
+prompt_hash: 530641052769c78fd36905fe2ecdffe6b44280657964b0493fbbcf6c1e0ac4af
+temperature: 0.1
+max_tokens: 4096
+timeout_seconds: 120
+retry: 1
+independent_run_seeds: [301, 302, 303]
+scientific_config: configs/frozen_v03.yaml
+task_suite: configs/frozen_v03_tasks.yaml

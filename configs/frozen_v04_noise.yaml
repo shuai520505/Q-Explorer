@@ -1,0 +1,14 @@
+# Synthetic stress-test levels. These are not calibrated to any real device.
+version: "0.4"
+frozen: true
+model: depolarizing_1q_2q_plus_symmetric_readout
+expectation_method: exact_density_matrix_with_analytic_diagonal_readout_attenuation
+shots: null
+shot_policy: no finite-shot sampling; isolate gate/readout channels from shot noise
+noise_levels:
+  N0: {label: ideal, p_1q: 0.0, p_2q: 0.0, p_readout: 0.0}
+  N1: {label: low, p_1q: 0.0005, p_2q: 0.005, p_readout: 0.005}
+  N2: {label: medium, p_1q: 0.001, p_2q: 0.01, p_readout: 0.01}
+  N3: {label: high, p_1q: 0.002, p_2q: 0.02, p_readout: 0.02}
+excluded_channels: [thermal_relaxation, crosstalk, drift, leakage, correlated_noise]
+interpretation: synthetic NISQ-style robustness stress test; not hardware calibration

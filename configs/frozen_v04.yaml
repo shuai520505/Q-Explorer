@@ -1,0 +1,112 @@
+# Frozen before formal N1/N2/N3 Boundary results. Contains no credential.
+version: "0.4"
+frozen: true
+base_final_commit: 2e7a38c
+scientific_question: Does the frozen N0 TASK_F01 Boundary persist, shift, weaken, disappear, or acquire counterexamples under synthetic NISQ-style noise?
+target_task_id: TASK_F01
+target_task_type: BOUNDARY_TRANSITION
+task_suite_path: configs/frozen_v03_tasks.yaml
+task_suite_hash: 50c73a2e94a9be6b36ce093251257859d4c9fc37f45858745da4fb805d618713
+scientific_config_path: configs/frozen_v03.yaml
+scientific_config_hash: c47285bde61b6920908461d76f820f3f1e2fdf06b2b5b655b030766e8c7d8b9d
+judge_config_hash: 55b89131cea4d7f6e1d63f87188379c003456e9fd83056cdd7f79b1e41123746
+vqe_config_hash: 1ad5ac0cb68c0011dea00c6a4023180a8f0738e689a4879781c71c7a0f186d58
+noise_config_path: configs/frozen_v04_noise.yaml
+noise_config_hash: d470cce7846b83d2d639f0e79a390122b197f96ea7af22d973122230af4c4727
+noise_level_ids: [N1, N2, N3]
+noise_metadata_visible_to_agent: true
+agent_visible_noise_fields: [noise_present, noise_level_id, synthetic]
+hypothesis_transfer_mode: true
+transfer_hypothesis_path: results/v04/n0_transfer_hypothesis.json
+transfer_hypothesis_hash: 2281583ee787b48069dee0092fbb97d0c979865cca819ec2f7f599e7f109aca7
+agent_visible_transfer_fields: [hypothesis_id, status, claim, scope]
+n0:
+  source: frozen_v03b_v03c
+  total_runs: 15
+  validated_runs: 8
+  rerun: false
+runs_per_noise_level: 15
+vqe_budget_per_run: 16
+run_seeds:
+  N1: [401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415]
+  N2: [501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515]
+  N3: [601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615]
+noise_control:
+  strategy: rule_based
+  noise_level_id: N2
+  deterministic: true
+  trajectories: 1
+agent:
+  provider: openai_compatible
+  base_url: https://api.deepseek.com
+  model: deepseek-v4-flash
+  thinking_mode: false
+  temperature: 0.1
+  max_tokens: 4096
+  retry: 1
+  timeout_seconds: 120
+  max_repair_attempts: 1
+  prompt_path: prompts/research_agent_v03_deepseek_v01.txt
+  prompt_version: research_agent_v03_deepseek_v01
+  prompt_hash: 530641052769c78fd36905fe2ecdffe6b44280657964b0493fbbcf6c1e0ac4af
+shots:
+  value: null
+  policy: exact density-matrix expectations; analytic diagonal readout attenuation; no finite-shot noise
+boundary_estimator:
+  dimension: depth
+  contrast: mean_energy_error_ring_minus_linear
+  absolute_effect_deadband: 0.05
+  minimum_boundary_change: 0.20
+  candidate_region: adjacent depth pair with largest absolute contrast change meeting threshold, or a direction change
+  location: midpoint of candidate depth pair
+  small_shift_max: 1.0
+scientific_process_validity:
+  - outcome_validated
+  - complete_boundary_probe_action_experiment_evidence_chain
+  - boundary_probe_covers_at_least_two_exploration_depths
+  - programmatic_boundary_signature_resolved
+  - held_out_evidence_complete
+revision_attribution:
+  causal_visibility_rule: evidence_round_strictly_less_than_revision_round
+  same_run_required: true
+  unique_candidate_required: true
+counterexample_emergence:
+  definition: a resolved noisy exploration direction or held-out direction differs from the corresponding frozen N0 transfer signature
+  unresolved_is_counterexample: false
+  evidence_ids_required: true
+discovery_signals:
+  allowed: [PRESERVED, SHIFTED, WEAKENED, DISAPPEARED, COUNTEREXAMPLE_EMERGED, INCONCLUSIVE]
+  definitions:
+    PRESERVED: direction and candidate region match N0 with retained magnitude and held-out scientific validation
+    SHIFTED: a scientifically validated boundary resolves at a different frozen depth region
+    WEAKENED: direction remains but magnitude or separability falls below the frozen retention threshold
+    DISAPPEARED: scientific validation and resolved signatures both fall below frozen floors
+    COUNTEREXAMPLE_EMERGED: new noisy counterexample evidence reaches the frozen emergence-rate threshold
+    INCONCLUSIVE: no other frozen primary definition is met
+  thresholds:
+    preserved_min_retention: 0.50
+    preserved_min_no_shift: 0.50
+    preserved_min_magnitude_ratio: 0.70
+    shifted_min_scientific_rate: 0.20
+    shifted_max_no_shift: 0.50
+    weakened_min_scientific_rate: 0.20
+    disappeared_max_scientific_rate: 0.10
+    disappeared_max_resolved_rate: 0.20
+    counterexample_emergence_rate: 0.30
+confidence_interval: {method: wilson, confidence_level: 0.95}
+hardware_candidate_selection:
+  maximum_cases: 4
+  ordered_rules:
+    - largest_resolved_boundary_shift
+    - scientifically_preserved_at_highest_noise
+    - first_noise_induced_counterexample
+  deterministic_tie_break: [noise_level_id, run_id, hamiltonian_id, depth, entanglement]
+smoke_test_path: results/v04/noise_smoke_test.json
+smoke_test_hash: 9b695bde70abd8f10717d524e7be4330db343b9c448916ea17bad92421d38d3d
+history_snapshot_before_path: results/v04/history_hash_snapshot_before.json
+history_snapshot_before_hash: 698940be36480da5d5dc77b57a6d30cfaa2adf1c3835c17f20bdc75426252b8f
+results_root: results/v04
+traces_root: traces/v04
+formal_execution_requires_clean_tree: true
+real_quantum_hardware: false
+synthetic_noise_only: true

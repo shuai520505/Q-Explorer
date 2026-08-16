@@ -1,0 +1,33 @@
+# Frozen V0.3 policy/evaluation config. Contains no credentials.
+project: {name: Q-Explorer, version: "0.3", phase: multitask_pilot}
+backend: {name: qiskit_aer_statevector, noiseless: true, real_hardware: false}
+vqe:
+  optimizer: COBYLA
+  max_iterations: 40
+  optimizer_tolerance: 1.0e-6
+  convergence_energy_error: 1.0e-2
+  seeds: [2001, 2011, 2021, 2031, 2041, 2051, 2061, 2071, 2081, 2091, 2101, 2111, 2121, 2131, 2141, 2151]
+judge:
+  minimum_seeds: 2
+  support_relative_improvement: 0.10
+  counterexample_relative_worsening: 0.10
+  variance_ratio_limit: 2.0
+  failure_rate_difference_limit: 0.25
+  epsilon: 1.0e-12
+strategies:
+  rule_based: {runs_per_task: 1}
+  random: {policy_seeds: [17, 41, 73, 101, 137]}
+  no_intervention: {runs_per_task: 1}
+  fixed: {runs_per_task: 1, depth: 2, entanglement: linear}
+  llm: {independent_runs_per_task: 3}
+llm:
+  provider_from_environment: true
+  prompt_version: research_agent_v03
+  temperature: 0.1
+  max_tokens: 1600
+  timeout_seconds: 120
+  retry: 1
+  max_repair_attempts: 1
+metrics:
+  discriminative_action_types: [CONTROL_DEPTH, CONTROL_ENTANGLEMENT, SEARCH_COUNTEREXAMPLE, BOUNDARY_PROBE, VALIDATE_HYPOTHESIS, REVISE_HYPOTHESIS]
+  adequate_replication: 4
