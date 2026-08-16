@@ -1,0 +1,5 @@
+{"base_commit": "0e86e4a", "event": "GATE0_AUDIT_STARTED", "formal_submission": false}
+{"credential": "NOT_SET", "event": "CREDENTIAL_CHECK", "secret_value_logged": false}
+{"device_count": 0, "event": "DEVICE_DISCOVERY", "status": "NOT_QUERIED_CREDENTIAL_NOT_SET"}
+{"account_hardware": false, "event": "GENERIC_TRANSPILATION_REFERENCE", "records": 16}
+{"event": "GATE0_AUDIT_COMPLETED", "formal_hardware_research_jobs": 0, "formal_hardware_vqe_runs": 0}
