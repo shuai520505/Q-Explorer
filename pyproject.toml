@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "q-explorer"
+version = "0.5.0"
+description = "Reproducible active-science environment for VQE ansatz failure conditions"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+
+[tool.setuptools]
+packages = [
+  "src",
+  "src.hamiltonian",
+  "src.exact_solver",
+  "src.ansatz",
+  "src.vqe",
+  "src.evidence",
+  "src.logging",
+  "src.backend",
+  "src.hypothesis",
+  "src.baselines",
+  "src.research",
+  "src.v03",
+  "src.v03c",
+  "src.v03d",
+  "src.v04",
+  "src.v05_gate0",
+]

@@ -1,0 +1,4 @@
+# Frozen configurations and versioned prompts are hash-locked byte artifacts.
+# Preserve their exact committed bytes across Windows/Linux checkouts.
+configs/** -text
+prompts/** -text
